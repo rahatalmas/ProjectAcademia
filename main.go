@@ -31,6 +31,5 @@ func main(){
 	if DbErr!=nil{
 		fmt.Println(DbErr);
 	}
-	fmt.Println(DB);
 	http.ListenAndServe(":8080",new(Server));
 }
