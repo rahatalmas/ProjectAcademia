@@ -4,9 +4,15 @@ import (
 	"fmt"
 )
 
-type Student struct{
-	Id int
-	Name string
+type StudentLog struct{
+	Email string
+	Password string
+	Token string 
+}
+
+type LoginResponse struct{
+	Email string `json:"email"`
+	Token string  `json:"accesstoken"`
 }
 
 func Hello(){
