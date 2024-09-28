@@ -27,7 +27,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r* http.Request){
 }
 
 func main(){
-	fmt.Println("hello pretty pretty <3");
 	if DbErr!=nil{
 		fmt.Println(DbErr);
 	}

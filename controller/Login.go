@@ -15,6 +15,7 @@ type ErrorResponse struct {
 func Login(w http.ResponseWriter, r* http.Request){
 	contentType := r.Header.Get("Content-Type");
 	fmt.Println("loing Req..., Content Type: "+contentType);
+
 	var user model.StudentLog;
     var email string
 	var password string
@@ -33,6 +34,7 @@ func Login(w http.ResponseWriter, r* http.Request){
 		}
 		email = user.Email
 		password = user.Password
+
 	case "application/x-www-form-urlencoded":
 		err := r.ParseForm();
 		if err != nil{
@@ -41,8 +43,6 @@ func Login(w http.ResponseWriter, r* http.Request){
 		}
         email = r.FormValue("email");
 		password = r.FormValue("password");
-        fmt.Printf("email: %s",email);
-		fmt.Printf("password: %s",password);
 
 	default:
 		e:= ErrorResponse{Error:"Unknown Content Types"}
