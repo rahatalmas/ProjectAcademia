@@ -3,32 +3,30 @@ package main
 import(
 	"fmt"
 	"net/http"
-	"database/sql"
 	"ServeUser/controller"
-
-	_ "github.com/go-sql-driver/mysql"
+    "ServeUser/database"
 )
 
-var(
-	DB,DbErr = sql.Open("mysql","root:@/academia_db_main");
-)
 
-type Server struct{
-}
+type Server struct{}
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r* http.Request){
     if r.URL.Path == "/api/usr/login" && r.Method == http.MethodPost {
         controller.Login(w,r);
 	}else if r.URL.Path == "/api/usr/signup" && r.Method == http.MethodPost{
 		controller.SignUp(w,r);
+	}else if r.URL.Path == "/api/usr/data" && r.Method == http.MethodGet{
+		controller.UserData(w,r);
 	}else {
-		fmt.Fprintf(w,"Invalid Url");
+		fmt.Fprintf(w,"Invalid request");
 	}
 }
 
 func main(){
-	if DbErr!=nil{
-		fmt.Println(DbErr);
+	if err := database.DBInit(); err!=nil{
+		fmt.Println(err)
+		return
 	}
-	http.ListenAndServe(":8080",new(Server));
+	server := new(Server)
+	http.ListenAndServe(":8080",server);
 }

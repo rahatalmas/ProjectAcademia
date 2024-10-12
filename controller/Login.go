@@ -6,21 +6,22 @@ import (
 	"encoding/json"
 	"ServeUser/view"
 	"ServeUser/model"
+    "ServeUser/utility"
+	"time"
 )
 
 type ErrorResponse struct {
     Error string `json:"message"`
 }
 
+
 func Login(w http.ResponseWriter, r* http.Request){
 	contentType := r.Header.Get("Content-Type");
 	fmt.Println("loing Req..., Content Type: "+contentType);
-
 	var user model.StudentLog;
     var email string
 	var password string
-	var token string = "accesstoken"
-
+    var token string = ""
 	//check content types of data
 	switch contentType{
 	case "application/json":
@@ -58,13 +59,22 @@ func Login(w http.ResponseWriter, r* http.Request){
 	}
 
 	//generate access and refresh tokens
-	/*
-		
-	*/
+	token,err := utility.CreateToken(email)
+	if err != nil{
+		fmt.Println(err)
+	}
+	fmt.Println(token)
+    http.SetCookie(w, &http.Cookie{
+        Name:     "jwt",
+        Value:    token,
+        Path:     "/",
+        Expires:  time.Now().Add(1 * time.Hour),
+        HttpOnly: true, // Prevents JavaScript access to the cookie
+        Secure:   false, // Set to true if using HTTPS
+    })
 
 	//return successful login with tokens
 	responseData := model.LoginResponse{
-		Email:email,
 		Token:token,
 	}
 	view.JsonView(w,r,responseData);
