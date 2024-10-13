@@ -69,8 +69,8 @@ func Login(w http.ResponseWriter, r* http.Request){
         Value:    token,
         Path:     "/",
         Expires:  time.Now().Add(1 * time.Hour),
-        HttpOnly: true, // Prevents JavaScript access to the cookie
-        Secure:   false, // Set to true if using HTTPS
+        HttpOnly: true,
+        Secure:   false,
     })
 
 	//return successful login with tokens

@@ -2,7 +2,6 @@ package model
 
 import (
 	"fmt"
-	"time"
 )
 
 type Student struct {
@@ -11,7 +10,7 @@ type Student struct {
     FullName             string    `json:"full_name"`
     UserName             string    `json:"user_name"`
     Email                string    `json:"email"`
-    Password             string    `json:"-"`
+    Password             string    `json:"password"`
     ProfilePicture       string    `json:"profile_picture"`
     RegistrationYear      string `json:"registration_year"`
     RegistrationSemester string       `json:"registration_semester"`
@@ -23,7 +22,7 @@ type Student struct {
     CurrentCGPA          string   `json:"current_cgpa"`
     FinalProjectTitle    string    `json:"final_project_title"`
     FinalCGPA            string   `json:"final_cgpa"`
-    RefreshToken         string    `json:"refresh_token,omitempty"`
+    RefreshToken         string    `json:"refresh_token"`
 }
 
 type StudentLog struct{
