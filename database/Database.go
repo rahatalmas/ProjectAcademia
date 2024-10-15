@@ -32,11 +32,12 @@ func GetDB() *sql.DB{
 	return conn
 }
 
-func GetData(table string, obj any) {
+func GetData(table string, obj any) ([]any, error) {
     result := []any{}
     typ := reflect.TypeOf(obj)
     val := reflect.ValueOf(obj)
 
+    // Extract JSON tags from the struct
     var attrs []string
     for i := 0; i < val.NumField(); i++ {
         tag := typ.Field(i).Tag.Get("json")
@@ -45,37 +46,42 @@ func GetData(table string, obj any) {
         }
     }
     if len(attrs) == 0 {
-        return 
+        return nil, nil
     }
 
+    // Prepare SQL query
     query := fmt.Sprintf("SELECT %s FROM %s", strings.Join(attrs, ","), table)
     rows, err := conn.Query(query)
     if err != nil {
-        return
+        return nil, err
     }
     defer rows.Close()
-    fmt.Println(result)
+
+    // Iterate over the rows and populate the result
     for rows.Next() {
-        var temp []any
-        for i:=0;i<len(attrs);i++{
-            var str string 
-            fmt.Println(&str)
-            temp = append(temp,&str)
-        }
-        fmt.Println(temp)
-        err := rows.Scan(temp...)
-        if err!=nil{
-            fmt.Println(err)
-        }
-        for i := range temp {
-            if value, ok := temp[i].(*string); ok {
-                fmt.Println(*value)
-            } else {
-                fmt.Println("Type assertion failed")
-            }
+        // Create a new instance of the object
+        newObj := reflect.New(typ).Elem()
+
+        // Use reflection to scan the row into the object
+        values := make([]any, len(attrs))
+        for i := range values {
+            values[i] = newObj.Field(i).Addr().Interface()
         }
         
+        if err := rows.Scan(values...); err != nil {
+            return nil, err
+        }
+
+        // Append the populated object to the result
+        result = append(result, newObj.Interface())
     }
+
+    // Check for any error encountered during iteration
+    if err := rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return result, nil
 }
 
 func join(elems []string,ch string) string{
